@@ -1,6 +1,8 @@
 import React from "react";
 import SearchForms from "../../components/SearchForms";
-import StartupCard from "@/components/StartupCard";
+import StartupCard, { StartupTypeCard } from "@/components/StartupCard"; 
+import { STARTUPS_QUERY } from "@/sanity/lib/queries";
+import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 
 const Home = async ({
   searchParams,
@@ -8,19 +10,9 @@ const Home = async ({
   searchParams: Promise<{ query: string }>;
 }) => {
   const query = (await searchParams).query;
-
-  const posts = [
-    {
-      _createdat: new Date(),
-      views: 55,
-      author: { _id: 1, name: "John Doe" },
-      _id: 1,
-      description: "this is a descrionption ",
-      image: "/s1.jpeg",
-      category: "Robots",
-      title: "we Robots",
-    },
-  ];
+  const params = {search: query || null};
+  const { data: posts} = await sanityFetch({query: STARTUPS_QUERY, params}); 
+  
   return (
     <>
       <section className="pink_container">
@@ -40,7 +32,7 @@ const Home = async ({
         </p>
         <ul className="mt-7 card_grid">
           {posts?.length > 0 ? (
-            posts.map((post:StartupCardType, index: number)=>(
+            posts.map((post:StartupTypeCard)=>(
               <StartupCard key={post?._id} post={post}/>
             ))
           ):(
@@ -48,6 +40,7 @@ const Home = async ({
           )}
         </ul>
       </section>
+      <SanityLive />
     </>
   );
 };
