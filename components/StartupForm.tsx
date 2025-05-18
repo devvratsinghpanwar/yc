@@ -17,8 +17,13 @@ const StartupForm = () => {
   const [pitch, setPitch] = useState("");
   const { toast } = useToast();
   const router = useRouter();
+  type FormState = {
+    error: string;
+    status: "INITIAL" | "SUCCESS" | "ERROR";
+  };
+  
 
-  const handleFormSubmit = async (prevState: any, formData: FormData) => {
+  const handleFormSubmit = async (prevState: FormState, formData: FormData) => {
     try {
       const formValues = {
         title: formData.get("title") as string,
@@ -71,7 +76,7 @@ const StartupForm = () => {
     }
   };
 
-  const [state, formAction, isPending] = useActionState(handleFormSubmit, {
+  const [formAction] = useActionState(handleFormSubmit, {
     error: "",
     status: "INITIAL",
   });
@@ -169,9 +174,7 @@ const StartupForm = () => {
       <Button
         type="submit"
         className="startup-form_btn text-white"
-        disabled={isPending}
       >
-        {isPending ? "Submitting..." : "Submit Your Pitch"}
         <Send className="size-6 ml-2" />
       </Button>
     </form>

@@ -7,7 +7,6 @@ import {
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
-import Image from "next/image";
 
 import markdownit from "markdown-it";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,7 +54,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
               href={`/user/${post.author?._id}`}
               className="flex gap-2 items-center mb-3"
             >
-              <Image
+              <img
                 src={post.author.image}
                 alt="avatar"
                 width={64}

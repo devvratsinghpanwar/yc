@@ -6,6 +6,7 @@ import { writeClient } from "./sanity/lib/write-client";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google],
+  trustHost: true,
   callbacks: {
     async signIn({
       user,
