@@ -1,7 +1,6 @@
 import { cn, formatDate } from "@/lib/utils";
 import { EyeIcon } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Author, Startup } from "@/sanity/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,7 +39,7 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
           </Link>
         </div>
         <Link href={`/user/${author?._id}`}>
-          <Image
+          <img
             src={author?.image ?? "image not found"}
             alt={author?.name ?? "author"}
             width={48}

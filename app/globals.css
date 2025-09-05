@@ -200,11 +200,11 @@
 
   .pattern {
     background-image: linear-gradient(
-            to right,
-            transparent 49.5%,
-            rgba(251, 232, 67, 0.2) 49.5%,
-            rgba(251, 232, 67, 0.6) 50.5%,
-            transparent 50.5%
+      to right,
+      transparent 49.5%,
+      rgba(251, 232, 67, 0.2) 49.5%,
+      rgba(251, 232, 67, 0.6) 50.5%,
+      transparent 50.5%
     );
     background-size: 5% 100%;
     background-position: center;
@@ -213,6 +213,12 @@
 
   .tag-tri {
     @apply before:content-[''] before:absolute before:top-2 before:left-2 before:border-t-[10px] before:border-t-black before:border-r-[10px] before:border-r-transparent after:content-[''] after:absolute after:bottom-2 after:right-2 after:border-b-[10px] after:border-b-black after:border-l-[10px] after:border-l-transparent;
+  }
+  .primary_btn {
+    @apply bg-pink-600 text-white font-semibold py-2 rounded-lg hover:bg-pink-700 transition;
+  }
+  .input_field {
+    @apply px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition;
   }
 }
 

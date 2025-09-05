@@ -1,11 +1,9 @@
-import { BriefcaseIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 export const startup = defineType({
   name: "startup",
   title: "Startup",
   type: "document",
-  icon: BriefcaseIcon,
   fields: [
     defineField({
       name: "title",

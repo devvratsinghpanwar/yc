@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { createClient } from "@/utils/supabase/server";
 import { client } from "@/sanity/lib/client";
 import { AUTHOR_BY_ID_QUERY } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
@@ -11,7 +11,11 @@ export const experimental_ppr = true;
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
-  const session = await auth();
+  // Get Supabase user session (server-side)
+  const supabase = await createClient();
+  const {
+    data: { user: sessionUser },
+  } = await supabase.auth.getUser();
 
   const user = await client.fetch(AUTHOR_BY_ID_QUERY, { id });
   if (!user) return notFound();
@@ -42,7 +46,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
         <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
           <p className="text-30-bold">
-            {session?.id === id ? "Your" : "All"} Startups
+            {sessionUser?.id === id ? "Your" : "All"} Startups
           </p>
           <ul className="card_grid-sm">
             <Suspense fallback={<StartupCardSkeleton />}>

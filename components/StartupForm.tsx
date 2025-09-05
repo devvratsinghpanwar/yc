@@ -1,181 +1,98 @@
 "use client";
 
-import React, { useState, useActionState } from "react";
+import React, { useState, useActionState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { createPitch } from "../lib/actions"; // Your updated server action
+
+// Import your UI components
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import MDEditor from "@uiw/react-md-editor";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-import { formSchema } from "../lib/validation";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { createPitch } from "../lib/actions";
 
 const StartupForm = () => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [pitch, setPitch] = useState("");
-  const { toast } = useToast();
   const router = useRouter();
-  type FormState = {
-    error: string;
-    status: "INITIAL" | "SUCCESS" | "ERROR";
+  const { toast } = useToast();
+
+  // The initial state for our form action
+  const initialState = {
+    status: "INITIAL" as const,
+    message: "",
   };
-  
 
-  const handleFormSubmit = async (prevState: FormState, formData: FormData) => {
-    try {
-      const formValues = {
-        title: formData.get("title") as string,
-        description: formData.get("description") as string,
-        category: formData.get("category") as string,
-        link: formData.get("link") as string,
-        pitch,
-      };
+  // 1. Pass the server action DIRECTLY to useActionState
+  const [state, formAction] = useActionState(createPitch, initialState);
 
-      await formSchema.parseAsync(formValues);
+  // MDEditor requires its own state
+  const [pitch, setPitch] = useState("");
 
-      const result = await createPitch(prevState, formData, pitch);
-
-      if (result.status == "SUCCESS") {
-        toast({
-          title: "Success",
-          description: "Your startup pitch has been created successfully",
-        });
-
-        router.push(`/startup/${result._id}`);
-      }
-
-      return result;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErorrs = error.flatten().fieldErrors;
-
-        setErrors(fieldErorrs as unknown as Record<string, string>);
-
-        toast({
-          title: "Error",
-          description: "Please check your inputs and try again",
-          variant: "destructive",
-        });
-
-        return { ...prevState, error: "Validation failed", status: "ERROR" };
-      }
-
+  // 2. Use useEffect to react to state changes from the server action
+  useEffect(() => {
+    if (state.status === "SUCCESS") {
+      toast({
+        title: "Success!",
+        description: state.message,
+      });
+      // Redirect on success using the ID from the state
+      router.push(`/startup/${state.id}`);
+    } else if (state.status === "ERROR") {
       toast({
         title: "Error",
-        description: "An unexpected error has occurred",
+        description: state.message,
         variant: "destructive",
       });
-
-      return {
-        ...prevState,
-        error: "An unexpected error has occurred",
-        status: "ERROR",
-      };
     }
-  };
-
-  const [formAction] = useActionState(handleFormSubmit, {
-    error: "",
-    status: "INITIAL",
-  });
+  }, [state, router, toast]);
 
   return (
+    // The form now directly calls the action managed by the hook
     <form action={formAction} className="startup-form">
+      {/* --- Title Input --- */}
       <div>
-        <label htmlFor="title" className="startup-form_label">
-          Title
-        </label>
-        <Input
-          id="title"
-          name="title"
-          className="startup-form_input"
-          required
-          placeholder="Startup Title"
-        />
-
-        {errors.title && <p className="startup-form_error">{errors.title}</p>}
+        <label htmlFor="title" className="startup-form_label">Title</label>
+        <Input id="title" name="title" className="startup-form_input" required placeholder="Startup Title" />
+        {state.fieldErrors?.title && <p className="startup-form_error">{state.fieldErrors.title}</p>}
       </div>
 
+      {/* --- Description Textarea --- */}
       <div>
-        <label htmlFor="description" className="startup-form_label">
-          Description
-        </label>
-        <Textarea
-          id="description"
-          name="description"
-          className="startup-form_textarea"
-          required
-          placeholder="Startup Description"
-        />
-
-        {errors.description && (
-          <p className="startup-form_error">{errors.description}</p>
-        )}
+        <label htmlFor="description" className="startup-form_label">Description</label>
+        <Textarea id="description" name="description" className="startup-form_textarea" required placeholder="Startup Description" />
+        {state.fieldErrors?.description && <p className="startup-form_error">{state.fieldErrors.description}</p>}
+      </div>
+      
+      {/* --- Category Input --- */}
+       <div>
+        <label htmlFor="category" className="startup-form_label">Category</label>
+        <Input id="category" name="category" className="startup-form_input" required placeholder="e.g., Tech, Health, Education" />
+        {state.fieldErrors?.category && <p className="startup-form_error">{state.fieldErrors.category}</p>}
       </div>
 
+      {/* --- Image URL Input --- */}
       <div>
-        <label htmlFor="category" className="startup-form_label">
-          Category
-        </label>
-        <Input
-          id="category"
-          name="category"
-          className="startup-form_input"
-          required
-          placeholder="Startup Category (Tech, Health, Education...)"
-        />
-
-        {errors.category && (
-          <p className="startup-form_error">{errors.category}</p>
-        )}
+        <label htmlFor="link" className="startup-form_label">Image URL</label>
+        <Input id="link" name="link" className="startup-form_input" required placeholder="https://example.com/image.png" />
+        {state.fieldErrors?.link && <p className="startup-form_error">{state.fieldErrors.link}</p>}
       </div>
 
-      <div>
-        <label htmlFor="link" className="startup-form_label">
-          Image URL
-        </label>
-        <Input
-          id="link"
-          name="link"
-          className="startup-form_input"
-          required
-          placeholder="Startup Image URL"
-        />
-
-        {errors.link && <p className="startup-form_error">{errors.link}</p>}
-      </div>
-
+      {/* --- MDEditor for Pitch --- */}
       <div data-color-mode="light">
-        <label htmlFor="pitch" className="startup-form_label">
-          Pitch
-        </label>
-
+        <label htmlFor="pitch" className="startup-form_label">Pitch</label>
+        {/* We need a hidden input to pass the MDEditor value to FormData */}
+        <input type="hidden" name="pitch" value={pitch} />
         <MDEditor
           value={pitch}
-          onChange={(value) => setPitch(value as string)}
-          id="pitch"
-          preview="edit"
+          onChange={(value) => setPitch(value || "")}
           height={300}
-          style={{ borderRadius: 20, overflow: "hidden" }}
-          textareaProps={{
-            placeholder:
-              "Briefly describe your idea and what problem it solves",
-          }}
-          previewOptions={{
-            disallowedElements: ["style"],
-          }}
+          // ... other props
         />
-
-        {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
+        {state.fieldErrors?.pitch && <p className="startup-form_error">{state.fieldErrors.pitch}</p>}
       </div>
 
-      <Button
-        type="submit"
-        className="startup-form_btn text-white"
-      >
-        <Send className="size-6 ml-2" />
+      <Button type="submit" className="startup-form_btn text-white">
+        Submit Pitch <Send className="size-5 ml-2" />
       </Button>
     </form>
   );

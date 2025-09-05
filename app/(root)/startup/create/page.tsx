@@ -1,11 +1,14 @@
 import StartupForm from "@/components/StartupForm";
-import { auth } from "@/auth";
+import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 const Page = async () => {
-  const session = await auth();
+  const supabase = await createClient();
+  const {
+    data: { user: sessionUser },
+  } = await supabase.auth.getUser();
 
-  if (!session) redirect("/");
+  if (!sessionUser) redirect("/");
 
   return (
     <>
