@@ -48,7 +48,27 @@ export type Startup = {
   description?: string;
   category?: string;
   image?: string;
+  imageAsset?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
   pitch?: string;
+  upvotes?: number;
+  upvotedBy?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "author";
+  }>;
 };
 
 export type Author = {
@@ -61,7 +81,18 @@ export type Author = {
   name?: string;
   username?: string;
   email?: string;
-  image?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
   bio?: string;
 };
 

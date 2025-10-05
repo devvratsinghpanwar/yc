@@ -40,15 +40,39 @@ export const startup = defineType({
     }),
     defineField({
       name: "image",
-      type: "url",
-      validation: (Rule) =>
-        Rule.required().uri({
-          scheme: ['http', 'https'],
-        }),
-    }),    
+      type: "string",
+      title: "Image URL",
+      description: "URL of the startup image",
+    }),
+    defineField({
+      name: "imageAsset",
+      type: "image",
+      title: "Image Asset",
+      description: "Uploaded image asset",
+      options: {
+        hotspot: true,
+      },
+    }),
     defineField({
       name: "pitch",
       type: "markdown",
+    }),
+    defineField({
+      name: "upvotes",
+      type: "number",
+      title: "Upvotes Count",
+      initialValue: 0,
+    }),
+    defineField({
+      name: "upvotedBy",
+      type: "array",
+      title: "Upvoted By Users",
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "author" }],
+        },
+      ],
     }),
   ],
 });

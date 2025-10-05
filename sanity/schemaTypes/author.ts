@@ -16,7 +16,6 @@ export const author = defineType({
 
     defineField({
       name: "username",
-
       type: "string",
     }),
     defineField({
@@ -24,8 +23,12 @@ export const author = defineType({
       type: "string",
     }),
     defineField({
+      title: "Image",
       name: "image",
-      type: "url",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
     }),
     defineField({
       name: "bio",
@@ -35,6 +38,7 @@ export const author = defineType({
   preview: {
     select: {
       title: "name",
+      media: "image",
     },
   },
 });

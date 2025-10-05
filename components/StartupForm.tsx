@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import MDEditor from "@uiw/react-md-editor";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Link, Upload } from "lucide-react";
+import StartupImageUploader from "./StartupImageUploader";
 
 const StartupForm = () => {
   const router = useRouter();
@@ -27,6 +28,12 @@ const StartupForm = () => {
 
   // MDEditor requires its own state
   const [pitch, setPitch] = useState("");
+
+  // Image upload state
+  const [imageMode, setImageMode] = useState<"url" | "upload">("url");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploadedImageAssetId, setUploadedImageAssetId] = useState("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
 
   // 2. Use useEffect to react to state changes from the server action
   useEffect(() => {
@@ -70,11 +77,71 @@ const StartupForm = () => {
         {state.fieldErrors?.category && <p className="startup-form_error">{state.fieldErrors.category}</p>}
       </div>
 
-      {/* --- Image URL Input --- */}
+      {/* --- Image Section --- */}
       <div>
-        <label htmlFor="link" className="startup-form_label">Image URL</label>
-        <Input id="link" name="link" className="startup-form_input" required placeholder="https://example.com/image.png" />
-        {state.fieldErrors?.link && <p className="startup-form_error">{state.fieldErrors.link}</p>}
+        <label className="startup-form_label">Startup Image</label>
+
+        {/* Image Mode Toggle */}
+        <div className="flex gap-2 mb-4">
+          <Button
+            type="button"
+            variant={imageMode === "url" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setImageMode("url")}
+            className="flex items-center gap-2"
+          >
+            <Link size={16} />
+            URL
+          </Button>
+          <Button
+            type="button"
+            variant={imageMode === "upload" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setImageMode("upload")}
+            className="flex items-center gap-2"
+          >
+            <Upload size={16} />
+            Upload
+          </Button>
+        </div>
+
+        {/* URL Input Mode */}
+        {imageMode === "url" && (
+          <div>
+            <Input
+              id="link"
+              name="link"
+              className="startup-form_input"
+              placeholder="https://example.com/image.png"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              required={imageMode === "url" && !uploadedImageUrl}
+            />
+            {state.fieldErrors?.link && <p className="startup-form_error">{state.fieldErrors.link}</p>}
+          </div>
+        )}
+
+        {/* Upload Mode */}
+        {imageMode === "upload" && (
+          <div>
+            <StartupImageUploader
+              onUploadSuccess={(assetId, url) => {
+                setUploadedImageAssetId(assetId);
+                setUploadedImageUrl(url);
+              }}
+              onRemove={() => {
+                setUploadedImageAssetId("");
+                setUploadedImageUrl("");
+              }}
+              currentImageUrl={uploadedImageUrl}
+            />
+            {/* Hidden inputs to pass uploaded image data */}
+            <input type="hidden" name="imageAssetId" value={uploadedImageAssetId} />
+            <input type="hidden" name="uploadedImageUrl" value={uploadedImageUrl} />
+          </div>
+        )}
+
+        {state.fieldErrors?.image && <p className="startup-form_error">{state.fieldErrors.image}</p>}
       </div>
 
       {/* --- MDEditor for Pitch --- */}

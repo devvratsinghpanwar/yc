@@ -1,9 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import SearchForms from "../../components/SearchForms";
 import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
 import { STARTUPS_QUERY } from "@/sanity/lib/queries";
 import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { createClient } from "@/utils/supabase/server";
+import TopStartupsByCategory from "@/components/TopStartupsByCategory";
+import { StartupCardSkeleton } from "@/components/StartupCard";
 
 // The component props must reflect that searchParams is a Promise.
 const Home = async ({ searchParams }: { searchParams?: Promise<{ query?: string }> }) => {
@@ -37,6 +39,23 @@ const Home = async ({ searchParams }: { searchParams?: Promise<{ query?: string 
         </p>
         <SearchForms query={query} />
       </section>
+
+      {/* Top Picks by Category - Only show when not searching */}
+      {!query && (
+        <Suspense fallback={
+          <section className="section_container">
+            <h2 className="text-30-semibold mb-8">Top Picks by Category</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <StartupCardSkeleton key={i} />
+              ))}
+            </div>
+          </section>
+        }>
+          <TopStartupsByCategory />
+        </Suspense>
+      )}
+
       <section className="section_container">
         <p className="text-30-semibold">
           {query ? `Search results for "${query}"` : "All Startups"}
