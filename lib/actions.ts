@@ -108,6 +108,16 @@ export const createPitch = async (
     };
   } catch (error) {
     console.error("Sanity write error:", error);
+
+    // Check if it's a permissions error
+    if (error instanceof Error && error.message.includes('Insufficient permissions')) {
+      console.warn("⚠️  Sanity token lacks create permissions. Please update your token with Editor/Admin permissions.");
+      return {
+        status: "ERROR",
+        message: "Database permissions error. Please contact support or check your configuration.",
+      };
+    }
+
     return {
       status: "ERROR",
       message: "A server error occurred. Please try again later.",

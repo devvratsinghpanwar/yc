@@ -42,7 +42,7 @@ const UserStartupCard = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-white border-2 border-black shadow-100 hover:shadow-none transition-all font-semibold"
                 >
                   <Edit size={16} />
                 </Button>

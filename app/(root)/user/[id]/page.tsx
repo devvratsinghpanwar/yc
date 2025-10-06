@@ -1,3 +1,4 @@
+
 import { createClient } from "@/utils/supabase/server";
 import { client } from "@/sanity/lib/client";
 import { AUTHOR_BY_ID_QUERY } from "@/sanity/lib/queries";
@@ -5,7 +6,7 @@ import { urlForImage } from "@/sanity/lib/image"; // <-- Import the new image he
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import UserStartups from "@/components/UserStartups";
-import EditProfile from "@/components/EditProfile"; // <-- Import the new Edit component
+import UserProfileClient, { EditProfileButtonWrapper } from "@/components/UserProfileClient"; // <-- Import client wrapper
 import { Suspense } from "react";
 import { StartupCardSkeleton } from "@/components/StartupCard";
 
@@ -67,13 +68,11 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             {user?.bio || "This user has not provided a bio yet."}
           </p>
 
-          {/* FEATURE: Conditionally render the EditProfile client component */}
-          {/* This button will only appear if the logged-in user's ID matches the profile page's ID */}
-          {sessionUser?.id === id && (
-            <div className="mt-6 w-full px-4">
-              <EditProfile user={{ _id: user._id, bio: user.bio || "" }} />
-            </div>
-          )}
+          {/* Edit Profile Button */}
+          <EditProfileButtonWrapper
+            user={{ _id: user._id, bio: user.bio || "" }}
+            isOwner={sessionUser?.id === id}
+          />
         </div>
 
         <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
@@ -89,6 +88,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           </ul>
         </div>
       </section>
+
+      {/* Render EditProfile components outside the profile_container for proper z-index layering */}
+      <UserProfileClient
+        user={{ _id: user._id, bio: user.bio || "" }}
+        isOwner={sessionUser?.id === id}
+      />
     </>
   );
 };

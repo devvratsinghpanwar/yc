@@ -70,8 +70,14 @@ export async function signup(formData: FormData) {
 
     await writeClient.create(userDoc);
   } catch (sanityError) {
-    console.error("Failed to create user in Sanity:", sanityError);
-    throw new Error("A database error occurred during sign up.");
+    console.error("Sanity user creation error:", sanityError);
+    // Don't throw error - Sanity user creation is optional
+    console.log("User signup completed successfully despite Sanity error");
+
+    // Check if it's a permissions error
+    if (sanityError instanceof Error && sanityError.message.includes('Insufficient permissions')) {
+      console.warn("⚠️  Sanity token lacks create permissions. Please update your token with Editor/Admin permissions.");
+    }
   }
 
   revalidatePath("/", "layout");

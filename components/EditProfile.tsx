@@ -27,6 +27,19 @@ export default function EditProfile({ user }: EditProfileProps) {
 
   const [state, formAction, isPending] = useActionState(updateProfile, initialState);
 
+  // Listen for custom event to open the modal
+  useEffect(() => {
+    const handleOpenEditProfile = () => {
+      setIsOpen(true);
+    };
+
+    window.addEventListener('openEditProfile', handleOpenEditProfile);
+
+    return () => {
+      window.removeEventListener('openEditProfile', handleOpenEditProfile);
+    };
+  }, []);
+
   useEffect(() => {
     if (state.status === 'SUCCESS') {
       toast({ title: 'Success', description: state.message });
@@ -38,17 +51,8 @@ export default function EditProfile({ user }: EditProfileProps) {
 
   return (
     <>
-      {/* --- FIX: Apply primary button styles directly here --- */}
-      <button 
-        onClick={() => setIsOpen(true)} 
-        className="primary_btn w-full text-center"
-      >
-        Edit Profile
-      </button>
-      {/* --- END OF FIX --- */}
-      
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Edit Your Profile</h2>
             

@@ -51,7 +51,7 @@ export default function DeleteStartupButton({
         variant="outline"
         size="sm"
         onClick={() => setShowConfirm(true)}
-        className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-colors"
+        className="bg-primary hover:bg-primary/90 text-white border-2 border-black shadow-100 hover:shadow-none transition-all font-semibold"
       >
         <Trash2 size={16} />
       </Button>
