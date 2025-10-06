@@ -8,7 +8,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!;
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION!;
 const token = process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN!; // A write token
 
-console.log("Sanity Write Token:", token); // Debugging line to verify the token is loaded
+//console.log("Sanity Write Token:", token); // Debugging line to verify the token is loaded
 
 if (!token) {
   throw new Error("Sanity write token is not defined in environment variables.");
